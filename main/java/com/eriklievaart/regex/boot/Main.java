@@ -1,4 +1,4 @@
-package boot;
+package com.eriklievaart.regex.boot;
 
 import toolkit.WindowSaver;
 
