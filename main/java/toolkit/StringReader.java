@@ -47,5 +47,4 @@ public class StringReader {
 		}
 		return out.toArray(new String[] {});
 	}
-
 }

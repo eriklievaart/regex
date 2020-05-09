@@ -52,5 +52,4 @@ public class FileChooser {
 			JOptionPane.showMessageDialog(parent, "Unable to save file: " + file);
 		}
 	}
-
 }

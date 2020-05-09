@@ -141,5 +141,4 @@ public class UI {
 	private void updateOutput() {
 		to.setText(queue.process(from.getText()));
 	}
-
 }
