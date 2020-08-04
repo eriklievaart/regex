@@ -38,7 +38,6 @@ public class UI {
 	private JTextArea to = new JTextArea();
 
 	public void init() {
-
 		main.setTitle("Regex Tool");
 		main.setName("main");
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

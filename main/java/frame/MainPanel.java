@@ -168,8 +168,10 @@ public class MainPanel extends JPanel {
 				Pattern.compile(regex.getText());
 				escaped.setText(escape(regex.getText()));
 				regex.setBackground(Color.green);
+				regex.setForeground(Color.black);
 			} catch (IllegalArgumentException iae) {
 				regex.setBackground(Color.orange);
+				regex.setForeground(Color.black);
 			}
 		}
 	}
