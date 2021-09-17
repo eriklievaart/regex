@@ -1,6 +1,7 @@
 package toolkit;
 
 public class Option {
+
 	String name;
 	String regex;
 	String value;
@@ -37,9 +38,8 @@ public class Option {
 		value = v;
 	}
 
-	@Override
-	public String toString() {
-		return "option:" + name + "[" + value + "]-regex:" + regex;
+	public Option cloneOption() {
+		return new Option(name, regex, value);
 	}
 
 	@Override
@@ -56,7 +56,8 @@ public class Option {
 		return name.hashCode();
 	}
 
-	public Option cloneOption() {
-		return new Option(name, regex, value);
+	@Override
+	public String toString() {
+		return "option:" + name + "[" + value + "]-regex:" + regex;
 	}
 }

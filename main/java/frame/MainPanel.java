@@ -5,10 +5,13 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -17,9 +20,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import regex.RegexQueue;
-import toolkit.ConfigurationManager;
-import toolkit.Option;
-import toolkit.OptionAction;
+import toolkit.PropertiesIO;
 
 public class MainPanel extends JPanel {
 	JTextField regex = new JTextField();
@@ -39,34 +40,35 @@ public class MainPanel extends JPanel {
 		this.queue = queue;
 
 		setLayout(new GridLayout(0, 1, 0, 0));
-		registerOptions();
+		fillTextFields();
 		addComponents();
 	}
 
 	private void addComponents() {
-		add(new JLabel("Input"));
-		add(input);
-		add(new JLabel("Regex"));
-		add(regex);
 		regex.setFont(new Font("lucida console", Font.PLAIN, 16));
 		regex.getDocument().addDocumentListener(new TextFieldListener());
-		add(new JLabel("as String:"));
-		add(escaped);
-		add(new JLabel("Replace"));
-		add(replace);
-		add(new JLabel("Output"));
-		add(output);
+
+		addWithLabel("Input", input);
+		addWithLabel("Regex", regex);
+		addWithLabel("as String:", escaped);
+		addWithLabel("Replace", replace);
+		addWithLabel("Output", output);
 		add(queueButton);
 		add(goButton);
+
 		queueButton.addActionListener(new QueueListener());
 		goButton.addActionListener(new GoListener());
 	}
 
-	private void registerOptions() {
-		ConfigurationManager.registerConfigurable(this);
-		ConfigurationManager.registerOption(this, new Option("regex", ".*+", ""), new RegexAction());
-		ConfigurationManager.registerOption(this, new Option("replace", ".*+", ""), new ReplaceAction());
-		ConfigurationManager.registerOption(this, new Option("input", ".*+", ""), new InputAction());
+	private void addWithLabel(String label, JComponent component) {
+		add(new JLabel(label));
+		add(component);
+	}
+
+	private void fillTextFields() {
+		input.setText(PropertiesIO.getStringOrFallback("input", "some text"));
+		regex.setText(PropertiesIO.getStringOrFallback("regex", ".*+"));
+		replace.setText(PropertiesIO.getStringOrFallback("replace", "some replacement"));
 	}
 
 	public JButton getDefaultButton() {
@@ -81,63 +83,41 @@ public class MainPanel extends JPanel {
 		return in.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"");
 	}
 
-	private class RegexAction implements OptionAction {
-		@Override
-		public void actionPerformed(String value) {
-			if (regex.getText().equals("") && value != null && !value.equals("")) {
-				regex.setText(value);
-			}
-		}
-	}
-
-	private class ReplaceAction implements OptionAction {
-		@Override
-		public void actionPerformed(String value) {
-			if (replace.getText().equals("") && value != null && !value.equals("")) {
-				replace.setText(value);
-			}
-		}
-	}
-
-	private class InputAction implements OptionAction {
-		@Override
-		public void actionPerformed(String value) {
-			if (input.getText().equals("") && value != null && !value.equals("")) {
-				input.setText(value);
-			}
-		}
+	public JList<String> getGroups() {
+		return groupList;
 	}
 
 	private class GoListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String r = regex.getText();
-			String x = replace.getText();
-			String i = input.getText();
-
-			Pattern pattern = Pattern.compile(r);
-			Matcher matcher = pattern.matcher(i);
+			Matcher matcher = Pattern.compile(regex.getText()).matcher(input.getText());
 			if (matcher.matches()) {
 				output.setText("Success");
-				String[] groups = new String[matcher.groupCount() + 1];
-				for (int g = 0; g < groups.length; g++) {
-					groups[g] = g + ") " + matcher.group(g);
-				}
-				groupList.setListData(groups);
+				showGroups(matcher);
 			} else {
 				output.setText("Failure");
 				groupList.setListData(new String[0]);
 			}
-			if (!x.equals("")) {
-				String replace = i.replaceAll(r, x);
-				if (!i.equals(replace)) {
-					output.setText(replace);
+			Map<String, String> settings = new Hashtable<>();
+			settings.put("input", input.getText());
+			settings.put("regex", regex.getText());
+			settings.put("replace", replace.getText());
+			PropertiesIO.store(settings);
+		}
+
+		private void showGroups(Matcher matcher) {
+			String[] groups = new String[matcher.groupCount() + 1];
+			for (int g = 0; g < groups.length; g++) {
+				groups[g] = g + ") " + matcher.group(g);
+			}
+			groupList.setListData(groups);
+			if (!replace.getText().equals("")) {
+				String replaced = input.getText().replaceAll(regex.getText(), replace.getText());
+				if (!input.getText().equals(replaced)) {
+					output.setText(replaced);
 				}
 			}
-			ConfigurationManager.updateOption(MainPanel.this, new Option("regex", ".*+", regex.getText()));
-			ConfigurationManager.updateOption(MainPanel.this, new Option("replace", ".*+", replace.getText()));
-			ConfigurationManager.updateOption(MainPanel.this, new Option("input", ".*+", input.getText()));
 		}
 	}
 
@@ -174,9 +154,5 @@ public class MainPanel extends JPanel {
 				regex.setForeground(Color.black);
 			}
 		}
-	}
-
-	public JList<String> getGroups() {
-		return groupList;
 	}
 }

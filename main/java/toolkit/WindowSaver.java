@@ -18,7 +18,7 @@ import javax.swing.JFrame;
 public class WindowSaver implements AWTEventListener {
 	private static final String FILE_NAME = "WindowSaver.ini";
 	private static WindowSaver saver;
-	private Map<String, JFrame> framemap = new HashMap<String, JFrame>();
+	private Map<String, JFrame> framemap = new HashMap<>();
 
 	public static WindowSaver getInstance() {
 		if (saver == null) {
@@ -97,11 +97,13 @@ public class WindowSaver implements AWTEventListener {
 	}
 
 	private static Properties loadProperties() {
-		Properties settings = new Properties();
 		try {
+			Properties settings = new Properties();
 			settings.load(new FileInputStream(FILE_NAME));
+			return settings;
+
 		} catch (IOException ioe) {
+			return new Properties();
 		}
-		return settings;
 	}
 }

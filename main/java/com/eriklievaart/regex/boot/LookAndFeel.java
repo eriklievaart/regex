@@ -8,6 +8,12 @@ import javax.swing.UIManager;
 
 public class LookAndFeel {
 
+	private static final Color DARK = new Color(64, 64, 64);
+	private static final Color TEXT = new Color(236, 236, 236);
+	private static final Color CARET = new Color(255, 255, 0);
+	private static final Color INPUT = new Color(48, 71, 94);
+	private static final Color BUTTON = Color.gray;
+
 	public static void init() {
 		UIDefaults defaults = UIManager.getLookAndFeelDefaults();
 		setupColors(defaults);
@@ -22,20 +28,15 @@ public class LookAndFeel {
 	}
 
 	private static void setupColors(UIDefaults defaults) {
-		Color dark = new Color(64, 64, 64);
-		Color text = new Color(236, 236, 236);
-		Color caret = new Color(255, 255, 0);
-		Color input = new Color(48, 71, 94);
-
-		defaults.put("List.background", dark);
-		defaults.put("List.foreground", text);
-		defaults.put("TextField.background", input);
-		defaults.put("TextField.foreground", text);
-		defaults.put("TextField.caretForeground", caret);
-		defaults.put("Label.background", dark);
-		defaults.put("Label.foreground", text);
-		defaults.put("Panel.background", dark);
-		defaults.put("Panel.foreground", text);
-		defaults.put("Button.background", Color.gray);
+		defaults.put("List.background", DARK);
+		defaults.put("List.foreground", TEXT);
+		defaults.put("TextField.background", INPUT);
+		defaults.put("TextField.foreground", TEXT);
+		defaults.put("TextField.caretForeground", CARET);
+		defaults.put("Label.background", DARK);
+		defaults.put("Label.foreground", TEXT);
+		defaults.put("Panel.background", DARK);
+		defaults.put("Panel.foreground", TEXT);
+		defaults.put("Button.background", BUTTON);
 	}
 }
